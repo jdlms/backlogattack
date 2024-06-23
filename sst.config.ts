@@ -28,7 +28,8 @@ export default $config({
     });
 
     const allTitles = new sst.aws.Function("AllTitles", {
-      handler: "lib/allTitles.handler",
+      handler: "src/allTitles.handler",
+      url: true,
       nodejs: {
         install: ["node-fetch", "@aws-sdk/client-dynamodb"],
       },

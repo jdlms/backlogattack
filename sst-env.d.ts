@@ -6,6 +6,7 @@ declare module "sst" {
     AllTitles: {
       name: string
       type: "sst.aws.Function"
+      url: string
     }
     Backlogattack: {
       type: "sst.aws.Remix"

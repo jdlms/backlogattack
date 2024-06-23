@@ -6,8 +6,8 @@ import fetch from "node-fetch";
 import { Resource } from "sst";
 
 const dynamoClient = new DynamoDBClient();
-const tableName = Resource.SteamTable.name;
-
+const tableName = Resource.Steam.name;
+console.log({ tableName });
 const fetchData = async () => {
   try {
     // const response = await fetch(
@@ -21,8 +21,8 @@ const fetchData = async () => {
       Item: {
         // appid: { S: item.appid },
         // name: { S: item.name },
-        appid: "one",
-        name: "test",
+        appid: { S: "one" },
+        name: { S: "test" },
       },
     };
 
