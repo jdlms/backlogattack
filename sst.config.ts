@@ -18,7 +18,7 @@ export default $config({
   async run() {
     const steamTable = new sst.aws.Dynamo("Steam", {
       fields: {
-        appid: "string",
+        appid: "number",
         name: "string",
       },
       primaryIndex: {
@@ -31,7 +31,10 @@ export default $config({
       handler: "src/allTitles.handler",
       url: true,
       nodejs: {
-        install: ["node-fetch", "@aws-sdk/client-dynamodb"],
+        install: [
+          "node-fetch",
+          "@aws-sdk/client-dynamodb, @aws-sdk/lib-dynamodb",
+        ],
       },
       environment: {
         TABLE_NAME: steamTable.name,

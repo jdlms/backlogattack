@@ -1,39 +1,56 @@
-import {
-  DynamoDBClient,
-  PutItemCommand,
-} from "@aws-sdk/client-dynamodb";
-import fetch from "node-fetch";
 import { Resource } from "sst";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import {
+  BatchWriteCommand,
+  DynamoDBDocumentClient,
+} from "@aws-sdk/lib-dynamodb";
+import fetch from "node-fetch";
 
-const dynamoClient = new DynamoDBClient();
+const dynamoClient = new DynamoDBClient({});
+const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const tableName = Resource.Steam.name;
-console.log({ tableName });
+
+function* chunkArray(
+  array: { appi: number; name: string }[],
+  chunkSize: number
+) {
+  for (let i = 0; i < array.length; i += chunkSize) {
+    yield array.slice(i, i + chunkSize);
+  }
+}
+
 const fetchData = async () => {
   try {
-    // const response = await fetch(
-    //   "URL_TO_FETCH_JSON_OBJECT"
-    // );
-    // const data = await response.json();
+    const response = await fetch(
+      "http://api.steampowered.com/ISteamApps/GetAppList/v0002/?key=STEAMKEY&format=json'"
+    );
+    const data = await response.json();
 
-    // for (const item of data) {
-    const params = {
-      TableName: tableName,
-      Item: {
-        // appid: { S: item.appid },
-        // name: { S: item.name },
-        appid: { S: "one" },
-        name: { S: "test" },
-      },
-    };
+    const dataChunks = chunkArray(data.applist.apps, 25);
 
-    const command = new PutItemCommand(params);
-    await dynamoClient.send(command);
-    // }
+    for (const chunk of dataChunks) {
+      const putRequests = chunk.map((item) => ({
+        PutRequest: {
+          appid: { N: item.appi.toString() },
+          name: { S: item.name },
+        },
+      }));
+
+      const command = new BatchWriteCommand({
+        RequestItems: {
+          [tableName]: putRequests,
+        },
+      });
+      await docClient.send(command);
+    }
   } catch (error) {
-    console.error(error);
+    console.error(
+      "Error fetching data or writing to DynamoDB:",
+      error
+    );
   }
 };
 
-export const handler = async (event) => {
+export const handler = async () => {
   await fetchData();
 };
