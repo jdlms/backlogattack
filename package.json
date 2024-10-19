@@ -11,12 +11,14 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.674.0",
+    "@aws-sdk/lib-dynamodb": "^3.674.0",
     "@remix-run/node": "^2.12.1",
     "@remix-run/react": "^2.12.1",
     "@remix-run/serve": "^2.12.1",
     "@sparticuz/chromium": "^127.0.0",
     "isbot": "^4.1.0",
-    "puppeteer-core": "^23.1.1",
+    "puppeteer-core": "^23.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sst": "3.1.70"

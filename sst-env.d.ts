@@ -14,5 +14,9 @@ declare module "sst" {
       "type": "sst.aws.Function"
       "url": string
     }
+    "Titles": {
+      "name": string
+      "type": "sst.aws.Dynamo"
+    }
   }
 }
