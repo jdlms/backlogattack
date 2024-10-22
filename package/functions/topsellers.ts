@@ -11,20 +11,29 @@ const YOUR_LOCAL_CHROMIUM_PATH =
 const tableName = Resource.Titles.name
 const client = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
-interface Game {
-    title: string;
-    itemKey: string;
-    price: string;
+interface Title {
+    itemKey: "string",
+    title: "string",
+    imgUrl: "string",
+    base: "number",
+    currentSteam: "number",
+    currentWinGameStore: "number",
+    currentGameBillet: "number",
+    currentGreenManGaming: "number",
+    currentFanatical: "number",
+    currentHumbleBundle: "number",
+    currentBest: "number",
+    lastUpdated: "number"
 }
 
-const writeGamesToDynamo = async (games: Game[]) => {
+const writeGamesToDynamo = async (games: Title[]) => {
     // Batch write accepts up to 25 items at a time
     const gameChunks = chunkArray(games, 25);
 
     for (const gameBatch of gameChunks) {
         const params = {
             RequestItems: {
-                [tableName]: gameBatch.map((game: Game) => ({
+                [tableName]: gameBatch.map((game: Title) => ({
                     PutRequest: {
                         Item: {
                             itemKey: { S: game.itemKey },
@@ -45,7 +54,7 @@ const writeGamesToDynamo = async (games: Game[]) => {
     }
 };
 
-const chunkArray = (array: Game[], size: any) => {
+const chunkArray = (array: Title[], size: any) => {
     return array.reduce((acc: any, _: any, i: any) => {
         if (i % size === 0) acc.push(array.slice(i, i + size));
         return acc;

@@ -1,6 +1,5 @@
 /// <reference path="./.sst/platform/config.d.ts" />
 
-import { Dynamo } from ".sst/platform/src/components/aws";
 
 export default $config({
   app(input) {
@@ -11,26 +10,33 @@ export default $config({
     };
   },
   async run() {
-
     const table = new sst.aws.Dynamo("Titles", {
       fields: {
         itemKey: "string",
         title: "string",
-        img: "string",
-        price: "string",
-        lastUpdated: "number"
       },
-      primaryIndex: { hashKey: "title", rangeKey: "itemKey" },
-      localIndexes: {
-        ImgIndex: { rangeKey: "img" },
-        PriceIndex: { rangeKey: "price" },
-        LastUpdatedIndex: { rangeKey: "lastUpdated" }
+      primaryIndex: {
+        hashKey: "title",
+        rangeKey: "itemKey"
       },
       globalIndexes: {
-        CreatedAtIndex: { hashKey: "itemKey", rangeKey: "title" }
+        ItemKeyIndex: {
+          hashKey: "itemKey",
+          rangeKey: "title"
+        }
+      },
+      transform: {
+        table: {
+          billingMode: 'PAY_PER_REQUEST',
+          deletionProtectionEnabled: true,
+          // pointInTimeRecovery: {
+          //   enabled: false
+          // }
+        }
       }
-
     });
+
+
 
     const api = new sst.aws.Function("Puppeteer", {
       url: true,
@@ -43,7 +49,7 @@ export default $config({
       permissions: [
         {
           actions: ["dynamodb:BatchWriteItem", "dynamodb:PutItem"], resources: [
-            table.arn, // Dynamically links to your DynamoDB table's ARN
+            table.arn,
           ],
         },
       ],
