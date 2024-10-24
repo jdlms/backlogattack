@@ -3,10 +3,7 @@ import chromium from "@sparticuz/chromium";
 import { BatchWriteItemCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { Resource } from "sst";
-import Chromium from "@sparticuz/chromium";
-import { split } from "postcss/lib/list";
-import { map } from "puppeteer-core/lib/esm/third_party/rxjs/rxjs.js";
-import { replace } from "@remix-run/react";
+
 
 //LOCAL
 // npx @puppeteer/browsers install chromium@latest --path /tmp/localChromium
@@ -50,7 +47,7 @@ export async function handler() {
     await page.goto(url!);
 
     const titles = await page.$$eval('.search_result_row', rows =>
-        rows.slice(0, 20).map(row => {
+        rows.slice(0, 100).map(row => {
 
             const originalPriceElement = row.querySelector('.discount_original_price');
             const finalPriceElement = row.querySelector('.discount_final_price');
@@ -73,7 +70,10 @@ export async function handler() {
         })
     );
 
-    console.log(titles);
+    console.log(titles.length);
+
+    https://store.steampowered.com/search/results/?query&start=50&count=50&dynamic_data=&sort_by=_ASC&supportedlang=english&snr=1_7_7_7000_7&filter=topsellers&infinite=1
+
     // create full title object
     writeGamesToDynamo(titles);
 
@@ -96,6 +96,7 @@ const writeGamesToDynamo = async (titles: any) => {
         const filteredTitles = titleBatch.filter((title: any) => title.base !== "Free")
 
         const numericalPrices = filteredTitles.map((title: any) => {
+            // clean up the price strings
             const basePrice = title.base.split("€")[0].replace(',', '.').trim();
             const currentPrice = title.currentS.split("€")[0].replace(',', '.').trim();
 
@@ -106,7 +107,6 @@ const writeGamesToDynamo = async (titles: any) => {
             };
         })
 
-        console.log(numericalPrices);
         const params = {
             RequestItems: {
                 [tableName]: numericalPrices.map((title: any) => ({
