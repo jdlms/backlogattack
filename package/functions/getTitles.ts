@@ -4,6 +4,9 @@ import { BatchWriteItemCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb"
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { Resource } from "sst";
 import Chromium from "@sparticuz/chromium";
+import { split } from "postcss/lib/list";
+import { map } from "puppeteer-core/lib/esm/third_party/rxjs/rxjs.js";
+import { replace } from "@remix-run/react";
 
 //LOCAL
 // npx @puppeteer/browsers install chromium@latest --path /tmp/localChromium
@@ -49,8 +52,16 @@ export async function handler() {
     const titles = await page.$$eval('.search_result_row', rows =>
         rows.slice(0, 20).map(row => {
 
-            const basePrice = row.querySelector('.discount_orginal_price') ? row.querySelector('.discount_final_price')?.textContent?.trim() : row.querySelector('.discount_orginal_price')?.textContent?.trim()
-            const currentPrice = row.querySelector('.discount_final_price') ? row.querySelector('.discount_final_price')?.textContent?.trim() : row.querySelector('.discount_orginal_price')?.textContent?.trim()
+            const originalPriceElement = row.querySelector('.discount_original_price');
+            const finalPriceElement = row.querySelector('.discount_final_price');
+
+            const basePrice = originalPriceElement
+                ? originalPriceElement.textContent?.trim()
+                : finalPriceElement?.textContent?.trim();
+
+            const currentPrice = finalPriceElement
+                ? finalPriceElement.textContent?.trim()
+                : '';
 
             return {
                 itemKey: row.getAttribute('data-ds-itemkey') || '',
@@ -58,9 +69,11 @@ export async function handler() {
                 imgUrl: row.querySelector('.search_capsule img')?.getAttribute('src') || '',
                 base: basePrice,
                 currentS: currentPrice
-            }
-        }))
+            };
+        })
+    );
 
+    console.log(titles);
     // create full title object
     writeGamesToDynamo(titles);
 
@@ -80,18 +93,30 @@ const writeGamesToDynamo = async (titles: any) => {
     const titleChunks = chunkArray(titles, 25);
 
     for (const titleBatch of titleChunks) {
-        const filteredTitles = titleBatch.filter((title: any) => title.base !== "free")
-        console.log(filteredTitles);
+        const filteredTitles = titleBatch.filter((title: any) => title.base !== "Free")
+
+        const numericalPrices = filteredTitles.map((title: any) => {
+            const basePrice = title.base.split("€")[0].replace(',', '.').trim();
+            const currentPrice = title.currentS.split("€")[0].replace(',', '.').trim();
+
+            return {
+                ...title,
+                base: basePrice,
+                currentS: currentPrice
+            };
+        })
+
+        console.log(numericalPrices);
         const params = {
             RequestItems: {
-                [tableName]: filteredTitles.map((title: any) => ({
+                [tableName]: numericalPrices.map((title: any) => ({
                     PutRequest: {
                         Item: {
                             itemKey: { S: title.itemKey },
                             title: { S: title.title },
                             imgUrl: { S: title.imgUrl },
-                            base: { N: Number(title.base?.split("€")[0]) },
-                            currentS: { N: Number(title.currentS?.split("€")[0]) }
+                            base: { N: title.base },
+                            currentS: { N: title.currentS }
                         }
                     }
                 }))
