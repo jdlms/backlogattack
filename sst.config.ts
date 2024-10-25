@@ -42,7 +42,7 @@ export default $config({
       url: true,
       memory: "2 GB",
       timeout: "15 minutes",
-      handler: "package/functions/getTitles.handler",
+      handler: "package/functions/writeInitialTitles.handler",
       nodejs: {
         install: ["@sparticuz/chromium"],
       },
