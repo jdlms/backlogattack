@@ -13,6 +13,11 @@ import {
   SearchBox,
 } from "react-instantsearch";
 
+const searchClient = algoliasearch(
+  "BPN8TM6PX7",
+  "a675de4ad17e090ea39d6022d0cf0847"
+);
+
 export const meta: MetaFunction = () => {
   return [
     { title: "Backlog Attack" },
