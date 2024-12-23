@@ -1,9 +1,14 @@
-import { columns, Payment } from "~/components/columns";
 import { DataTable } from "~/components/dataTable";
 import { payments } from "~/dummyData";
 import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import SearchSelect from "~/components/SearchSelect";
+import {
+  DynamoDBClient,
+  ListGlobalTablesCommand,
+} from "@aws-sdk/client-dynamodb";
+import { Resource } from "sst";
+import { ScanCommand, ScanCommandInput } from "@aws-sdk/lib-dynamodb";
 
 export const meta: MetaFunction = () => {
   return [
@@ -12,41 +17,52 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-
-
-export interface Option {
-  value: string;
-  label: string;
-}
-
-const options: Option[] = [
-  { value: "apple", label: "Apple" },
-  { value: "banana", label: "Banana" },
-  { value: "grape", label: "Grape" },
-  { value: "orange", label: "Orange" },
-  { value: "pineapple", label: "Pineapple" },
-];
+const client = new DynamoDBClient({ region: "eu-central-1" });
 
 export const loader: LoaderFunction = async ({ request }) => {
-	// const userDetails: UserDetails | null = await getUserDetails(request);
+  try {
+    const tableName = Resource.Titles.name;
+    // const userDetails: UserDetails | null = await getUserDetails(request);
 
-	// if (!userDetails?.email) {
-	// 	throw new Response("User not authenticated", { status: 401 });
-	// }
+    // if (!userDetails?.email) {
+    // 	throw new Response("User not authenticated", { status: 401 });
+    // }
 
-	try {
-		const files = await getTitles()
-		return json<Files>({ files }, { status: 200 });
-	} catch (error) {
-		console.error("Error fetching outbox files for user:", error);
-		throw new Response("An error occurred while fetching data from DynamoDB.", {
-			status: 500,
-		});
-	}
+    const params: ScanCommandInput = {
+      TableName: tableName,
+    };
+
+    const items = [];
+    let ExclusiveStartKey;
+
+    do {
+      const command: ScanCommand = new ScanCommand({
+        ...params,
+        ExclusiveStartKey,
+      });
+      const response = await client.send(command);
+      if (response.Items) items.push(...response.Items);
+      ExclusiveStartKey = response.LastEvaluatedKey;
+    } while (ExclusiveStartKey);
+
+    console.log(items);
+
+    return new Response(JSON.stringify(items), {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    // const files = await getTitles()
+    // return json<Files>({ files }, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching titles:", error);
+    throw new Response("An error occurred while fetching data from DynamoDB.", {
+      status: 500,
+    });
+  }
 };
 
 export default function Index() {
-  const data: = useLoaderData<typeof loader>();
+  const data = useLoaderData<typeof loader>();
 
   return (
     <div className="flex h-screen items-start pt-24   justify-center">
@@ -62,7 +78,7 @@ export default function Index() {
           </h1>
         </header>
         <div className="h-[144px] w-[434px]">
-          <SearchSelect data={options} />
+          <SearchSelect data={data} />
         </div>
       </div>
     </div>
