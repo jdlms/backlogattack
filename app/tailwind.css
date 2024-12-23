@@ -4,7 +4,7 @@
 
 html,
 body {
-  @apply bg-gray-700;
+  @apply bg-[#1e1f1f];
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
@@ -26,4 +26,64 @@ body {
   /* or more simple
   clip-path: polygon(50% 0,79% 90%,2% 35%,98% 35%,21% 90%); 
    */
+}
+
+.starburst {
+  width: 100px;
+  aspect-ratio: 1;
+  background-color: #ffa500;
+  clip-path: polygon(
+    100% 50%,
+    78.98% 57.76%,
+    93.3% 75%,
+    71.21% 71.21%,
+    75% 93.3%,
+    57.76% 78.98%,
+    50% 100%,
+    42.24% 78.98%,
+    25% 93.3%,
+    28.79% 71.21%,
+    6.7% 75%,
+    21.02% 57.76%,
+    0% 50%,
+    21.02% 42.24%,
+    6.7% 25%,
+    28.79% 28.79%,
+    25% 6.7%,
+    42.24% 21.02%,
+    50% 0%,
+    57.76% 21.02%,
+    75% 6.7%,
+    71.21% 28.79%,
+    93.3% 25%,
+    78.98% 42.24%,
+    100% 50%,
+    78.98% 57.76%,
+    calc(78.98% - 11.59px) calc(57.76% - 3.11px),
+    calc(100% - 20px) calc(50% - 0px),
+    calc(78.98% - 11.59px) calc(42.24% - -3.11px),
+    calc(93.3% - 17.32px) calc(25% - -10px),
+    calc(71.21% - 8.49px) calc(28.79% - -8.49px),
+    calc(75% - 10px) calc(6.7% - -17.32px),
+    calc(57.76% - 3.11px) calc(21.02% - -11.59px),
+    calc(50% - 0px) calc(0% - -20px),
+    calc(42.24% - -3.11px) calc(21.02% - -11.59px),
+    calc(25% - -10px) calc(6.7% - -17.32px),
+    calc(28.79% - -8.49px) calc(28.79% - -8.49px),
+    calc(6.7% - -17.32px) calc(25% - -10px),
+    calc(21.02% - -11.59px) calc(42.24% - -3.11px),
+    calc(0% - -20px) calc(50% - 0px),
+    calc(21.02% - -11.59px) calc(57.76% - 3.11px),
+    calc(6.7% - -17.32px) calc(75% - 10px),
+    calc(28.79% - -8.49px) calc(71.21% - 8.49px),
+    calc(25% - -10px) calc(93.3% - 17.32px),
+    calc(42.24% - -3.11px) calc(78.98% - 11.59px),
+    calc(50% - 0px) calc(100% - 20px),
+    calc(57.76% - 3.11px) calc(78.98% - 11.59px),
+    calc(75% - 10px) calc(93.3% - 17.32px),
+    calc(71.21% - 8.49px) calc(71.21% - 8.49px),
+    calc(93.3% - 17.32px) calc(75% - 10px),
+    calc(78.98% - 11.59px) calc(57.76% - 3.11px),
+    calc(100% - 20px) calc(50% - 0px)
+  );
 }

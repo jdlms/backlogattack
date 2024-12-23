@@ -22,7 +22,7 @@ export default function SearchSelect({ data }: { data: RawData[] }) {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [filteredOptions, setFilteredOptions] = useState<Option[]>([]);
 
-  // Prepare the data for React-Select
+  // Prepare the data for React-Select, must change this
   const options = useMemo(
     () =>
       data.map((item) => ({
@@ -60,7 +60,7 @@ export default function SearchSelect({ data }: { data: RawData[] }) {
   const customStyles = {
     control: (provided: any) => ({
       ...provided,
-      backgroundColor: "gray",
+      backgroundColor: "#ededed",
     }),
     menu: (provided: any) => ({
       ...provided,
@@ -68,7 +68,7 @@ export default function SearchSelect({ data }: { data: RawData[] }) {
     }),
     option: (provided: any, state: any) => ({
       ...provided,
-      backgroundColor: state.isFocused ? "#d3d3d3" : "gray",
+      backgroundColor: state.isFocused ? "#ededed" : "#ededed",
       color: "white",
     }),
   };
@@ -111,6 +111,7 @@ export default function SearchSelect({ data }: { data: RawData[] }) {
         DropdownIndicator: CustomDropdownIndicator,
         IndicatorSeparator: CustomIndicatorSeparator,
       }}
+      noOptionsMessage={() => null}
     />
   );
 }

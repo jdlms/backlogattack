@@ -68,7 +68,7 @@ export default function Index() {
     <div className="flex h-screen items-start pt-24   justify-center">
       <div className="flex flex-col items-center gap-6">
         <header className="flex items-center gap-3">
-          <div className="star"></div>
+          <div className="starburst"></div>
           <h1 className="leading text-2xl font-bold text-gray-100">
             Welcome to
             <br />
