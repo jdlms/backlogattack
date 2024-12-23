@@ -13,7 +13,7 @@ body {
 
 /* HTML: <div class="star"></div> */
 .star {
-  width: 100px;
+  width: 50px;
   aspect-ratio: 1;
   background: #ffa500;
   clip-path: polygon(
