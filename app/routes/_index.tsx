@@ -62,25 +62,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Index() {
-  const data = useLoaderData<typeof loader>();
+  // const data = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex h-screen items-start pt-24   justify-center">
-      <div className="flex flex-col items-center gap-6">
-        <header className="flex items-center gap-3">
-          <div className="starburst"></div>
-          <h1 className="leading text-2xl font-bold text-gray-100">
-            {/* Welcome to
-            <br /> */}
-            <span className="text-base md:text-4xl">
-              BACKLOGATTACK<span className="text-sm">.wtf</span>
-            </span>
-          </h1>
-        </header>
-        <div className=" w-[350px]">
-          <SearchSelect data={data} />
-        </div>
-      </div>
+    <div>
+      <p className="text-white">test</p>
     </div>
   );
 }
