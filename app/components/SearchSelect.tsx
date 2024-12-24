@@ -64,12 +64,12 @@ export default function SearchSelect({ data }: { data: RawData[] }) {
     }),
     menu: (provided: any) => ({
       ...provided,
-      backgroundColor: "gray",
+      backgroundColor: "#ededed",
     }),
     option: (provided: any, state: any) => ({
       ...provided,
-      backgroundColor: state.isFocused ? "#ededed" : "#ededed",
-      color: "white",
+      backgroundColor: state.isFocused ? "#cccccc" : "#ededed",
+      color: "#1e1f1f",
     }),
   };
 
@@ -112,6 +112,7 @@ export default function SearchSelect({ data }: { data: RawData[] }) {
         IndicatorSeparator: CustomIndicatorSeparator,
       }}
       noOptionsMessage={() => null}
+      isSearchable={true}
     />
   );
 }
